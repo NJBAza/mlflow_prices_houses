@@ -1,10 +1,8 @@
-import distutils
 import os
 import sys
 from pathlib import Path
 
 import mlflow
-import setuptools
 from mlflow.models.signature import infer_signature
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
@@ -14,7 +12,6 @@ from sklearn.metrics import (
     recall_score,
 )
 from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
 PACKAGE_ROOT = Path(os.path.abspath(os.path.dirname(__file__))).parent
@@ -35,13 +32,6 @@ FEATURES.remove(config.TARGET)
 
 X_transformed = pipeline_features.fit_transform(train_data[FEATURES])
 X_transformed2 = pipeline_features.fit_transform(test_data[FEATURES])
-
-
-def perform_pipeline(model=None):
-    full_pipeline = Pipeline(
-        steps=[("pipeline_features", pipeline_features), ("classifier", model)]
-    )
-    return full_pipeline
 
 
 # RandomForest
