@@ -1,0 +1,8 @@
+[flake8]
+extend-ignore=E305, E501, F402, E402
+
+
+max-line-lenght = 99
+
+# radon (metric)
+radon-max-cc = 10

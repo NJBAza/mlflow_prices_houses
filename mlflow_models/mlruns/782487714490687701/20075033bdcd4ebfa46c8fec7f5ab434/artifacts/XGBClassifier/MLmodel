@@ -1,0 +1,46 @@
+artifact_path: XGBClassifier
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.9.18
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.5.1
+mlflow_version: 2.15.1
+model_size_bytes: 3446143
+model_uuid: 8ae8aeef40b8484aa79af84104094119
+run_id: 20075033bdcd4ebfa46c8fec7f5ab434
+signature:
+  inputs: '[{"type": "double", "name": "city", "required": true}, {"type": "double",
+    "name": "homeType", "required": true}, {"type": "double", "name": "hasSpa", "required":
+    true}, {"type": "double", "name": "garageSpaces_winsor", "required": true}, {"type":
+    "double", "name": "yearBuilt_winsor", "required": true}, {"type": "double", "name":
+    "numOfPatioAndPorchFeatures_winsor", "required": true}, {"type": "double", "name":
+    "lotSizeSqFt_winsor", "required": true}, {"type": "double", "name": "avgSchoolRating_winsor",
+    "required": true}, {"type": "double", "name": "numOfBathrooms_winsor", "required":
+    true}, {"type": "double", "name": "numOfBedrooms_winsor", "required": true}, {"type":
+    "double", "name": "homeType_count_winsor", "required": true}, {"type": "double",
+    "name": "latitude_winsor_3", "required": true}, {"type": "double", "name": "longitude_winsor_3",
+    "required": true}, {"type": "double", "name": "area", "required": true}, {"type":
+    "double", "name": "back", "required": true}, {"type": "double", "name": "backyard",
+    "required": true}, {"type": "double", "name": "build", "required": true}, {"type":
+    "double", "name": "ceiling", "required": true}, {"type": "double", "name": "contain",
+    "required": true}, {"type": "double", "name": "family", "required": true}, {"type":
+    "double", "name": "feature", "required": true}, {"type": "double", "name": "from",
+    "required": true}, {"type": "double", "name": "great", "required": true}, {"type":
+    "double", "name": "include", "required": true}, {"type": "double", "name": "large",
+    "required": true}, {"type": "double", "name": "living", "required": true}, {"type":
+    "double", "name": "lot", "required": true}, {"type": "double", "name": "new",
+    "required": true}, {"type": "double", "name": "open", "required": true}, {"type":
+    "double", "name": "update", "required": true}, {"type": "double", "name": "walk",
+    "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+utc_time_created: '2024-08-11 04:25:10.587632'
