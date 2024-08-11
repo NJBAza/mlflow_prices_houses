@@ -23,6 +23,7 @@ model/venv/
 .gitattributes
 __pychache__
 **/__pychache__
+**/__pycache__/
 
 model/venv/lib/python3.9/site-packages/xgboost/lib/libxgboost.so
 model/venv/lib/python3.9/site-packages/nvidia/nccl/lib/libnccl.so.2         
