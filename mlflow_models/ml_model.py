@@ -7,11 +7,15 @@ from mlflow.models.signature import infer_signature
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score,
+    classification_report,
     f1_score,
     precision_score,
     recall_score,
 )
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import (
+    GridSearchCV,
+    train_test_split,
+)
 from xgboost import XGBClassifier
 
 PACKAGE_ROOT = Path(os.path.abspath(os.path.dirname(__file__))).parent
@@ -33,6 +37,10 @@ FEATURES.remove(config.TARGET)
 X_transformed = pipeline_features.fit_transform(train_data[FEATURES])
 X_transformed2 = pipeline_features.fit_transform(test_data[FEATURES])
 
+# splitting in train and test sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X_transformed, train_y, train_size=0.8, random_state=2022, stratify=train_y
+)
 
 # RandomForest
 rf_classifier = RandomForestClassifier(random_state=RANDOM_SEED)
@@ -52,7 +60,7 @@ grid_forest = GridSearchCV(
     scoring="accuracy",
     verbose=0,
 )
-model_forest = grid_forest.fit(X_transformed, train_y)
+model_forest = grid_forest.fit(X_train, y_train)
 
 # XGBoost Classifier
 
@@ -73,7 +81,7 @@ grid_xgboost = GridSearchCV(
     scoring="accuracy",
     verbose=0,
 )
-model_xgboost = grid_xgboost.fit(X_transformed, train_y)
+model_xgboost = grid_xgboost.fit(X_train, y_train)
 
 
 mlflow.set_experiment("Houses Price Range")
@@ -88,26 +96,24 @@ def eval_metrics(y_true, y_pred):
     return accuracy, f1, recall, precision
 
 
-def metrics_model(model, pipeline, X, y):
+def metrics_model(model, X, y):
 
-    X_transformed = pipeline.fit_transform(X)
-    pred = model.predict(X_transformed)
+    pred = model.predict(X)
     # metrics
     (accuracy, f1, recall, precision) = eval_metrics(y, pred)
     # Logging best parameters from gridsearch
     return (accuracy, f1, recall, precision)
 
 
-def mlflow_logging(model, pipeline, X, y, name):
+def mlflow_logging(model, X, y, name):
     with mlflow.start_run() as run:
         # mlflow.set_tracking_uri("http://0.0.0.0:5001/")
         mlflow.set_tag("run_id", run.info.run_id)
 
-        # Fit the pipeline and predict
-        X_transformed = pipeline.fit_transform(X)
-        prediction = model.predict(X_transformed)
+        # Fit the prediction
+        prediction = model.predict(X)
         accuracy, f1, recall, precision = eval_metrics(y, prediction)
-
+        report = classification_report(y, prediction)
         # Logging metrics
         mlflow.log_params(model.best_params_ if hasattr(model, "best_params_") else {})
         mlflow.log_metric(
@@ -117,26 +123,22 @@ def mlflow_logging(model, pipeline, X, y, name):
         mlflow.log_metric("f1-score", f1)
         mlflow.log_metric("Recall", recall)
         mlflow.log_metric("Precision", precision)
-
+        mlflow.log_text(report, "classification_report.txt")
         # Logging the model
-        signature = infer_signature(
-            model_input=X_transformed, model_output=model_forest.predict(X_transformed)
-        )
+        signature = infer_signature(model_input=X, model_output=model_forest.predict(X))
         mlflow.sklearn.log_model(model, name, signature=signature)
         mlflow.end_run()
 
 
 mlflow_logging(
     model=model_forest,
-    pipeline=pipeline_features,
-    X=test_data[FEATURES],
-    y=test_y,
+    X=X_test,
+    y=y_test,
     name="RandomForestClassifier",
 )
 mlflow_logging(
     model=model_xgboost,
-    pipeline=pipeline_features,
-    X=test_data[FEATURES],
-    y=test_y,
+    X=X_test,
+    y=y_test,
     name="XGBClassifier",
 )
